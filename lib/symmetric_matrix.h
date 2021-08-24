@@ -55,9 +55,9 @@ public:
 
 
 	size_t get_number_in_mem() { return number_in_memory; }
-	T& dereference() const { return *elem; } // Получение текущего элемента.
+	T& dereference() const { return *elem; } // ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ .
 	T* pointer() const { return elem; }
-	bool equal(const Position& other) const { return other.pointer() == elem; } // Проверка на равенство.
+	bool equal(const Position& other) const { return other.pointer() == elem; } // ГЏГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г°Г ГўГҐГ­Г±ГІГўГ®.
 
 	size_t number_in_mem(size_t num)
 	{
@@ -86,26 +86,26 @@ public:
 	{
 		elem = &get_el(number + 1);
 		++number;	
-	} // Перемещение вперед.
+	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ ГўГЇГҐГ°ГҐГ¤.
 
 	void decrement()
 	{
 		elem = &get_el(number + 1);
 		--number;		
-	} // Перемещение назад.
+	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г Г§Г Г¤.
 
 	void advance(int n)
 	{
 		elem = &get_el(number + n);
 		number += n;
-	}  // Перемещение на "n" элементов.
+	}  // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  "n" ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў.
 
 	int distance_to(const Position& other) const
 	{
 		int res = other.number - number;
 		if (res < 0) res = -res;
 		return res;
-	} // Расстояние до другой позиции.
+	} // ГђГ Г±Г±ГІГ®ГїГ­ГЁГҐ Г¤Г® Г¤Г°ГіГЈГ®Г© ГЇГ®Г§ГЁГ¶ГЁГЁ.
 };
 
 template<class T>
@@ -302,7 +302,6 @@ public:
 	void push_front(const T& new_el)
 	{
 		size_t required_size = this->size + this->shape + 1;
-		deep_copy(required_size);
 
 		Symmetric_Matrix<T> tmp;
 		tmp.reserve(required_size);
@@ -322,7 +321,6 @@ public:
 	void emplace_front(T&& new_el)
 	{
 		size_t required_size = this->size + this->shape + 1;
-		deep_copy(required_size);
 
 		Symmetric_Matrix<T> tmp;
 		tmp.reserve(required_size);
@@ -341,8 +339,6 @@ public:
 
 	void erase(iterator el_for_erase)
 	{
-		//deep_copy(this->capacity);
-		auto pointer = el_for_erase.pos.pointer();
 		size_t el_in_memory = el_for_erase.pos.get_number_in_mem();
 
 		Symmetric_Matrix<T> tmp(this->shape);
