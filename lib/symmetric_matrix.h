@@ -55,9 +55,9 @@ public:
 
 
 	size_t get_number_in_mem() { return number_in_memory; }
-	T& dereference() const { return *elem; } // ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ .
+	T& dereference() const { return *elem; } // Получение текущего элемента.
 	T* pointer() const { return elem; }
-	bool equal(const Position& other) const { return other.pointer() == elem; } // ГЏГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г°Г ГўГҐГ­Г±ГІГўГ®.
+	bool equal(const Position& other) const { return other.pointer() == elem; } // Проверка на равенство.
 
 	size_t number_in_mem(size_t num)
 	{
@@ -86,26 +86,26 @@ public:
 	{
 		elem = &get_el(number + 1);
 		++number;	
-	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ ГўГЇГҐГ°ГҐГ¤.
+	} // Перемещение вперед.
 
 	void decrement()
 	{
 		elem = &get_el(number + 1);
 		--number;		
-	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г Г§Г Г¤.
+	} // Перемещение назад.
 
 	void advance(int n)
 	{
 		elem = &get_el(number + n);
 		number += n;
-	}  // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  "n" ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў.
+	}  // Перемещение на "n" элементов.
 
 	int distance_to(const Position& other) const
 	{
 		int res = other.number - number;
 		if (res < 0) res = -res;
 		return res;
-	} // ГђГ Г±Г±ГІГ®ГїГ­ГЁГҐ Г¤Г® Г¤Г°ГіГЈГ®Г© ГЇГ®Г§ГЁГ¶ГЁГЁ.
+	} // Расстояние до другой позиции.
 };
 
 template<class T>
@@ -278,25 +278,39 @@ public:
 	void push_back(const T& new_el)
 	{
 		size_t required_size = this->size + this->shape + 1;
-		deep_copy(required_size);
+
+		Symmetric_Matrix<T> tmp;
+		tmp.reserve(required_size);
+
+		for (size_t i = 0; i < this->size; ++i)
+			construct(tmp.data + i, *(this->data + i));
 
 		for (size_t i = this->size; i < required_size; ++i)
-			construct(this->data + i, new_el);
+			construct(tmp.data + i, new_el);
 
-		this->size = required_size;
-		++this->shape;
+		tmp.size = required_size;
+		tmp.shape = this->shape + 1;
+
+		this->swap(tmp);
 	}
 
 	void emplace_back(T&& new_el)
 	{
 		size_t required_size = this->size + this->shape + 1;
-		deep_copy(required_size);
+
+		Symmetric_Matrix<T> tmp;
+		tmp.reserve(required_size);
+
+		for (size_t i = 0; i < this->size; ++i)
+			construct(tmp.data + i, *(this->data + i));
 
 		for (size_t i = this->size; i < required_size; ++i)
-			construct(this->data + i, std::forward<T>(new_el));
+			construct(tmp.data + i, std::forward<T>(new_el));
 
-		this->size = required_size;
-		++this->shape;
+		tmp.size = required_size;
+		tmp.shape = this->shape + 1;
+
+		this->swap(tmp);
 	}
 
 	void push_front(const T& new_el)
@@ -339,6 +353,7 @@ public:
 
 	void erase(iterator el_for_erase)
 	{
+		//deep_copy(this->capacity);
 		size_t el_in_memory = el_for_erase.pos.get_number_in_mem();
 
 		Symmetric_Matrix<T> tmp(this->shape);
@@ -432,7 +447,7 @@ public:
 		return iterator(tmp);
 	}
 
-	void fill(const T a)
+	void fill(const T& a)
 	{
 		for (size_t i = 0; i < this->size; ++i) {
 			construct(this->data + i, a);
