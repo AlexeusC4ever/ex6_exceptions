@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <iterator>
+#include <exception>
 
 template<class T>
 class Symmetric_Matrix;
@@ -18,6 +19,16 @@ template<class T1, class T2>
 void construct(T1* pT1, T2&& rcT2)
 {
 	new (pT1) T1(std::forward<T2>(rcT2));
+}
+
+template<class T1, class T2>
+void construct_interval(T1* pT1_start, T1* pT1_end, T2&& rcT2)
+{
+	while (pT1_start != pT1_end) 
+	{
+		construct(pT1_start, std::forward<T2>(rcT2));
+		++pT1_start;
+	}
 }
 
 template<class T>
@@ -52,12 +63,10 @@ public:
 
 	Position(const Position&) = default;
 
-
-
 	size_t get_number_in_mem() { return number_in_memory; }
-	T& dereference() const { return *elem; } // ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГІГҐГЄГіГ№ГҐГЈГ® ГЅГ«ГҐГ¬ГҐГ­ГІГ .
+	T& dereference() const { return *elem; } // Получение текущего элемента.
 	T* pointer() const { return elem; }
-	bool equal(const Position& other) const { return other.pointer() == elem; } // ГЏГ°Г®ГўГҐГ°ГЄГ  Г­Г  Г°Г ГўГҐГ­Г±ГІГўГ®.
+	bool equal(const Position& other) const { return other.pointer() == elem; } // Проверка на равенство.
 
 	size_t number_in_mem(size_t num)
 	{
@@ -71,6 +80,7 @@ public:
 		else if (num == shape * shape) {
 			el_from_memory = shape * (shape + 1) / 2;
 		}
+		else throw std::out_of_range("out_of_range");
 		return el_from_memory;
 	}
 
@@ -86,26 +96,26 @@ public:
 	{
 		elem = &get_el(number + 1);
 		++number;	
-	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ ГўГЇГҐГ°ГҐГ¤.
+	} // Перемещение вперед.
 
 	void decrement()
 	{
 		elem = &get_el(number + 1);
 		--number;		
-	} // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г Г§Г Г¤.
+	} // Перемещение назад.
 
 	void advance(int n)
 	{
 		elem = &get_el(number + n);
 		number += n;
-	}  // ГЏГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ Г­Г  "n" ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў.
+	}  // Перемещение на "n" элементов.
 
 	int distance_to(const Position& other) const
 	{
 		int res = other.number - number;
 		if (res < 0) res = -res;
 		return res;
-	} // ГђГ Г±Г±ГІГ®ГїГ­ГЁГҐ Г¤Г® Г¤Г°ГіГЈГ®Г© ГЇГ®Г§ГЁГ¶ГЁГЁ.
+	} // Расстояние до другой позиции.
 };
 
 template<class T>
@@ -232,7 +242,7 @@ public:
 		std::swap(shape, rImpl.shape);
 	}
 
-	~Symmetric_Matrix_impl()
+	~Symmetric_Matrix_impl() noexcept
 	{
 		if (ref_counter.use_count() == 1)
 		{
@@ -285,27 +295,10 @@ public:
 		for (size_t i = 0; i < this->size; ++i)
 			construct(tmp.data + i, *(this->data + i));
 
-		for (size_t i = this->size; i < required_size; ++i)
-			construct(tmp.data + i, new_el);
+		//for (size_t i = this->size; i < required_size; ++i)
+		//	construct(tmp.data + i, new_el);
 
-		tmp.size = required_size;
-		tmp.shape = this->shape + 1;
-
-		this->swap(tmp);
-	}
-
-	void emplace_back(T&& new_el)
-	{
-		size_t required_size = this->size + this->shape + 1;
-
-		Symmetric_Matrix<T> tmp;
-		tmp.reserve(required_size);
-
-		for (size_t i = 0; i < this->size; ++i)
-			construct(tmp.data + i, *(this->data + i));
-
-		for (size_t i = this->size; i < required_size; ++i)
-			construct(tmp.data + i, std::forward<T>(new_el));
+		construct_interval(tmp.data + this->size, tmp.data + required_size, new_el);
 
 		tmp.size = required_size;
 		tmp.shape = this->shape + 1;
@@ -320,27 +313,10 @@ public:
 		Symmetric_Matrix<T> tmp;
 		tmp.reserve(required_size);
 
-		for (size_t i = 0; i < required_size - this->size; ++i)
-			construct(tmp.data + i, new_el);
+		//for (size_t i = 0; i < required_size - this->size; ++i)
+		//	construct(tmp.data + i, new_el);
 
-		for (size_t i = required_size - this->size; i < required_size; ++i)
-			construct(tmp.data + i, *(this->data + i - (this->shape + 1)));
-
-		tmp.size = required_size;
-		tmp.shape = this->shape + 1;
-
-		this->swap(tmp);
-	}
-
-	void emplace_front(T&& new_el)
-	{
-		size_t required_size = this->size + this->shape + 1;
-
-		Symmetric_Matrix<T> tmp;
-		tmp.reserve(required_size);
-
-		for (size_t i = 0; i < required_size - this->size; ++i)
-			construct(tmp.data + i, std::forward<T>(new_el));
+		construct_interval(tmp.data, tmp.data + required_size - this->size, new_el);
 
 		for (size_t i = required_size - this->size; i < required_size; ++i)
 			construct(tmp.data + i, *(this->data + i - (this->shape + 1)));
