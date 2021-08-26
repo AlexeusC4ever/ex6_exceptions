@@ -119,9 +119,13 @@ public:
 };
 
 template<class T>
-class Sym_iter_base : public std::iterator<std::random_access_iterator_tag, T>
+class Sym_iter_base
 {
 public:
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = T;
+
+
 	Position<T> pos;
 
 	Sym_iter_base(Position<T> pos_) : pos(pos_) {}
@@ -305,6 +309,7 @@ public:
 
 		this->swap(tmp);
 	}
+
 
 	void push_front(const T& new_el)
 	{
