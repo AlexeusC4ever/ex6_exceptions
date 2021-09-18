@@ -231,14 +231,14 @@ public:
 		this->swap(tmp);
 	}
 
-	size_t get_shape() { return this->shape; }
-	int get_ref_counter() { return this->ref_counter.use_count(); }
-	size_t get_size() { return this->size; }
-	size_t get_capacity() { return this->capacity; }
+	size_t get_shape() const noexcept { return this->shape; }
+	int get_ref_counter() const noexcept { return this->ref_counter.use_count(); }
+	size_t get_size() const noexcept { return this->size; }
+	size_t get_capacity() const noexcept { return this->capacity; }
 };
 
 template<class T>
-void print(Symmetric_Matrix<T> a)
+void print(Symmetric_Matrix<T>& a)
 {
 	size_t count = 0;
 	for (auto it : a)

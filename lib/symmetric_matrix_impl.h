@@ -26,7 +26,7 @@ public:
 		size(get_actual_size(shape_)),
 		capacity(get_actual_size(shape_)) {}
 
-	size_t get_actual_size(size_t sh) noexcept { return sh * (sh + 1) / 2; }
+	size_t get_actual_size(size_t sh) const noexcept { return sh * (sh + 1) / 2; }
 
 	void swap(Symmetric_Matrix_impl& rImpl) noexcept
 	{

@@ -1,43 +1,6 @@
 ﻿#include <iostream>
-#include "./container/symmetric_matrix.h"
+#include "symmetric_matrix.h"
 #include <crtdbg.h>
-#include <vector>
-
-struct CHECK {
-    int h;
-
-    int* mas;
-
-    CHECK(int h_, int a) : h(h_) {
-        mas = new int[12];
-    }
-
-    CHECK(const CHECK& a) {
-        std::cout << "COPY CONSTRUCTOR" << std::endl;
-        //mas = new int[12];
-        /*for (int i = 0; i < 12; ++i)
-        {
-            mas[i] = a.mas[i];
-        }*/
-        mas = a.mas;
-    }
-
-    CHECK& operator= (const CHECK&) {
-        std::cout << "COPY OPERATOR" << std::endl;
-    }
-
-    CHECK(CHECK&&) {
-        std::cout << "MOVE CONSTRUCTOR" << std::endl;
-    }
-
-    CHECK& operator= (CHECK&&) {
-        std::cout << "MOVE OPERATOR" << std::endl;
-    }
-
-    ~CHECK() {
-        delete[] mas;
-    }
-};
 
 void check_leaks() {
     Symmetric_Matrix<int> a(5);
@@ -64,16 +27,14 @@ void check_leaks() {
 
     //print(for_reserve);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 2; ++i) {
         for_reserve.push_back(2);
 
 
-        for_reserve.push_front(4);
+        for_reserve.push_front(6);
 
         auto it = for_reserve.begin();
         it += std::rand() % for_reserve.get_size();
-
-        for_reserve.erase(it);
 
 
     }

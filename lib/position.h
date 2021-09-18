@@ -17,12 +17,12 @@ public:
 
 	Position(const Position&) = default;
 
-	size_t get_number_in_mem() { return number_in_memory; }
+	size_t get_number_in_mem() const { return number_in_memory; }
 	T& dereference() const { return *elem; } // Получение текущего элемента.
 	T* pointer() const { return elem; }
 	bool equal(const Position& other) const { return other.pointer() == elem; } // Проверка на равенство.
 
-	size_t number_in_mem(size_t num)
+	size_t number_in_mem(size_t num) const
 	{
 		size_t i = num / this->shape;
 		size_t j = num % this->shape;
